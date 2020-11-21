@@ -21,7 +21,6 @@ handler = WebhookHandler(secret)
 import datetime 
 import random
 
-
 flatten = lambda t: [item for sublist in t for item in sublist]
 
 
@@ -33,12 +32,26 @@ def find_chinese(file):
 
 def handleMessage(msg):
     msg = find_chinese(msg)
+    # print("msg:", msg)
     keywords = parseMessage(msg)
+    # print("keywords:", keywords)
     puns = []
+    # ----test---- #
+    k = True
+    # ------------ #
     for keyword in keywords:
-        puns.append(findPun(keyword))
-    puns = flatten(puns)
-    if len(puns):
+        pronunciation = pronounce(keyword)
+        bpmf_list = similarPhonetics(pronunciation)
+        # ----test---- #
+        #if k:
+        #    print(similarPhonetics(bpmf))
+        #    k = False
+        # ------------ #
+        for bpmf in bpmf_list:
+            puns.append(findPun(keyword, msg, bpmf))
+    # puns = flatten(puns)
+    # print("puns:", puns)
+    if len(flatten(puns)) != 0:
         return randomlyChoose(puns)
     else:
         return "pun not found"
@@ -46,28 +59,149 @@ def handleMessage(msg):
 
 def parseMessage(msg):
     keywords = []
-    for kwLen in range(2, len(msg)):
-        for kwStart in range(len(msg) - kwLen + 1):
-            keywords.append(msg[kwStart : kwStart + kwLen])
+    # maxLen = len(msg) + 1
+    # if maxLen > 4:
+    #     maxLen == 4
+    rangeStart = len(msg) - 6
+    if rangeStart < 0:
+        rangeStart = 0
+    
+    
+    for kwStart in range(rangeStart, len(msg) - 2 + 1):
+        keywords.append(msg[kwStart : kwStart + 2])
     return keywords
 
 
 def randomlyChoose(puns):
-    return puns[random.randint(0,len(puns)-1)]
+    while True:
+        for list in puns:
+            if len(list) > 0:
+                if random.randint(0, 10) < 8: 
+                    return list[random.randint(0, len(list)-1)]
     
     
-def Idk(strr):
-    ## parse 注音
-    strr.split('ˋˊˇ˙')
-    return 123
-
-
-def findPun(keyword):
-    # with open("dict.csv") as dic:
+    
+def similarPhonetics(pronunciation):   # phonetic is bpmf type  return bpmf list
+    ##################
+    def combine(origin, to_append):
+        result = list()
+        for s in origin:
+            for a in to_append:
+                result.append(s+'\u3000'+a)
+        return result
         
+    def recur(combinations: list, tmpstr, level, pronunciation_list: list, similar_pronunciations: dict):
+        if level == len(pronunciation_list):
+            combinations.append(tmpstr[:-1])
+        else:
+            # 這邊是開始接的部分
+            for i in similar_pronunciations[pronunciation_list[level]]:
+                recur(combinations, tmpstr+i+'\u3000', level+1, pronunciation_list, similar_pronunciations)
+    
+    tones = '˙\u3000ˊˇˋ'
+    #################
+    # -------- rule -------- #
+    # ㄣㄥ 互通
+    # ㄓㄗ
+    # ㄔㄘ
+    # ㄕㄙ
+    # ㄖㄌ
+    # ㄦㄜ
+    rules = { 'ㄣ': 'ㄥ', 'ㄥ': 'ㄣ', 
+              'ㄓ': 'ㄗ', 'ㄗ': 'ㄓ', 
+              'ㄔ': 'ㄘ', 'ㄘ': 'ㄔ', 
+              'ㄕ': 'ㄙ', 'ㄙ': 'ㄕ', 
+              'ㄖ': 'ㄌ', 'ㄌ': 'ㄖ', 
+              'ㄦ': 'ㄜ', 'ㄜ': 'ㄦ', }
+    def rule_change_consonant(pronunciation):
+        similar_pronunciations = list()
+        for consonant in pronunciation:
+            if consonant in rules:
+                tmp = pronunciation.replace(consonant, rules[consonant])
+                similar_pronunciations.append(tmp)
+        return similar_pronunciations
+    def rule_change_tone(pronunciation):
+        similar_pronunciations = list()
+        for i, tone in enumerate(tones):
+            if tone in pronunciation:
+                raise_tone = pronunciation.replace(tone,tones[min(i+1,len(tones)-1)])
+                drop_tone = pronunciation.replace(tone,tones[max(i-1,0)])
+                if raise_tone != pronunciation:
+                    similar_pronunciations.append(raise_tone)
+                if drop_tone != pronunciation:
+                    similar_pronunciations.append(drop_tone)
+        
+        return similar_pronunciations
+    # ---------------------- #
+
+    if pronunciation[0] == "(":
+        pronunciation = pronunciation[3:]
+    pronunciation_list = pronunciation.split('\u3000')
+    # similar sound
+    similar_pronunciations = dict()
+    for p in pronunciation_list:
+        similar_pronunciations[p] = [p]
+        # --- rule add here--- #
+
+        # -------------------- #
+        similar_pronunciations[p] += rule_change_consonant(p)
+        similar_pronunciations[p] += rule_change_tone(p)
+    combinations = similar_pronunciations[pronunciation_list[0]]
+    for i in range(1,len(pronunciation_list)):
+        combinations = combine(combinations, similar_pronunciations[pronunciation_list[i]])
+    return combinations
+        # ^^ 
+        # || 上面那三小
+        # || 下面那三小
+        # vv
+
+def pronounce(keyword):
+    bpmf = ""
+    with open("dict2.csv") as csvfile:
+        dic = csv.reader(csvfile)
+        for data in dic:
+            if data[1] == keyword:
+                bpmf = data[5]
+                break
+         
+    if bpmf != "":
+        return bpmf
+    else:  
+        for character in keyword:
+            with open("dict2.csv") as csvfile:
+                dic = csv.reader(csvfile)
+                for data in dic:
+                    if data[1] == character:
+                        if data[5][0] == "(":
+                            bpmf += ('　' + data[5][3:])
+                        else:
+                            bpmf += ('　' + data[5])
+                        break
+
+    if bpmf[0] == '　':
+        bpmf = bpmf[1:]
+    return bpmf
+            
 
 
-    pass
+def findPun(keyword, msg, bpmf):
+    # print(bpmf)
+    puns = []
+    # print(bpmf, len(bpmf))
+    with open("dict2.csv") as csvfile:
+        dic = csv.reader(csvfile)
+        for data in dic:
+            # print(bpmf)
+            if ((bpmf == data[5][:len(bpmf)] and (len(data[5]) == len(bpmf) or data[5][len(bpmf)] == '　')) or (bpmf == data[5][-len(bpmf):] and (len(data[5]) == len(bpmf) or data[5][-len(bpmf) - 1] == '　'))) and len(data[1]) > 2 and data[1] not in msg and keyword not in data[1]:
+                # print(data[5], len(data[5]))
+                puns.append(data[1])
+# (bpmf == data[:len(bpmf)] or bpmf == data[-len(bpmf):]) and 
+    return puns
+
+
+
+# end
+
 
 
 @app.route("/callback", methods=['POST'])
@@ -88,28 +222,12 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def respond_pun(event):
-    
-    # if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
-        
-    #     # Phoebe 愛唱歌
-    #     pretty_note = '♫♪♬'
-    #     pretty_text = ''
-        
-    #     for i in event.message.text:
-        
-    #         pretty_text += i
-    #         pretty_text += random.choice(pretty_note)
-    
-    #     line_bot_api.reply_message(
-    #         event.reply_token,
-    #         TextSendMessage(text=pretty_text)
-    #     )
-
     responseMessage = handleMessage(event.message.text)
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=responseMessage)
-    )
+    if responseMessage != "pun not found":
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=responseMessage)
+        )
 
 
 
