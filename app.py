@@ -224,10 +224,13 @@ def callback():
 def respond_pun(event):
     responseMessage = handleMessage(event.message.text)
     if responseMessage != "pun not found":
+        print(responseMessage)
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=responseMessage)
         )
+    else:
+        print("pun not found")
 
 
 
