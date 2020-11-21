@@ -49,7 +49,10 @@ def handleMessage(msg):
         #    k = False
         # ------------ #
         for bpmf in bpmf_list:
-            puns.append(findPun(keyword, msg, bpmf))
+            if bpmf == pronunciation:
+                puns.insert(0, findPun(keyword, msg, bpmf))
+            else:
+                puns.append(findPun(keyword, msg, bpmf))
     # puns = flatten(puns)
     # print("puns:", puns)
     if len(flatten(puns)) != 0:
@@ -75,10 +78,10 @@ def parseMessage(msg):
 
 def randomlyChoose(puns):
     while True:
-        for list in puns:
-            if len(list) > 0:
+        for lists in puns:
+            if len(lists) > 0:
                 if random.randint(0, 10) < 8: 
-                    return list[random.randint(0, len(list)-1)]
+                    return lists[random.randint(0, len(lists)-1)]
     
     
     
@@ -163,25 +166,25 @@ def similarPhonetics(pronunciation):   # phonetic is bpmf type  return bpmf list
 
 def pronounce(keyword):
     bpmf = ""
-    with open("dict2.csv") as csvfile:
+    with open("dict4pronounce.csv") as csvfile:
         dic = csv.reader(csvfile)
         for data in dic:
-            if data[1] == keyword:
-                bpmf = data[5]
+            if data[0] == keyword:
+                bpmf = data[1]
                 break
          
     if bpmf != "":
         return bpmf
     else:  
         for character in keyword:
-            with open("dict2.csv") as csvfile:
+            with open("dict4pronounce.csv") as csvfile:
                 dic = csv.reader(csvfile)
                 for data in dic:
-                    if data[1] == character:
-                        if data[5][0] == "(":
-                            bpmf += ('　' + data[5][3:])
+                    if data[0] == character:
+                        if data[1][0] == "(":
+                            bpmf += ('　' + data[1][3:])
                         else:
-                            bpmf += ('　' + data[5])
+                            bpmf += ('　' + data[1])
                         break
 
     if bpmf[0] == '　':
@@ -194,15 +197,16 @@ def findPun(keyword, msg, bpmf):
     # print(bpmf)
     puns = []
     # print(bpmf, len(bpmf))
-    with open("dict2.csv") as csvfile:
+    with open("dict4pun.csv") as csvfile:
         dic = csv.reader(csvfile)
         for data in dic:
             # print(bpmf)
-            if ((bpmf == data[5][:len(bpmf)] and (len(data[5]) == len(bpmf) or data[5][len(bpmf)] == '　')) or (bpmf == data[5][-len(bpmf):] and (len(data[5]) == len(bpmf) or data[5][-len(bpmf) - 1] == '　'))) and len(data[1]) > 2 and data[1] not in msg and keyword not in data[1]:
+            if ((bpmf == data[1][:len(bpmf)] and (len(data[1]) == len(bpmf) or data[1][len(bpmf)] == '　')) or (bpmf == data[1][-len(bpmf):] and (len(data[1]) == len(bpmf) or data[1][-len(bpmf) - 1] == '　'))) and len(data[0]) > 2 and data[0] not in msg and keyword not in data[0]:
                 # print(data[5], len(data[5]))
-                puns.append(data[1])
+                puns.append(data[0])
 # (bpmf == data[:len(bpmf)] or bpmf == data[-len(bpmf):]) and 
     return puns
+
 
 
 
