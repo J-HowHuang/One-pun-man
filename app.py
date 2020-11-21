@@ -132,11 +132,8 @@ def similarPhonetics(pronunciation):   # phonetic is bpmf type  return bpmf list
                 if drop_tone != pronunciation:
                     similar_pronunciations.append(drop_tone)
                 break
-            if i == len(tones):
-                raise_tone = pronunciation + tones[0]
+            if i == len(tones)-1:
                 drop_tone = pronunciation + tones[2]
-                if raise_tone != pronunciation:
-                    similar_pronunciations.append(raise_tone)
                 if drop_tone != pronunciation:
                     similar_pronunciations.append(drop_tone)
         
