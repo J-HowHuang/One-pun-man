@@ -3,12 +3,12 @@ import csv
 character = input("請輸入欲更改的破音字：")
 bpmf = []
 
-with open("dict2.csv") as csvfile:
+with open("dict4pronounce.csv") as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
-        if data[1] == character:
-            print(data[5])
-            bpmf.append(data[5])
+        if data[0] == character:
+            print(data[1])
+            bpmf.append(data[1])
 
 
 select = int(input())
@@ -27,27 +27,27 @@ select = int(input())
 
 lines = []
 delete = []
-with open('dict2.csv', 'r') as readFile:
+with open('dict4pronounce.csv', 'r') as readFile:
     reader = csv.reader(readFile)
     for row in reader:
         lines.append(row) 
-        if row[1] == character and row[5] != bpmf[select]:
+        if row[0] == character and row[1] != bpmf[select]:
             # print(row)
             delete.append(row)
             lines.remove(row)
 
 
 
-with open('dict2.csv', 'w') as writeFile:
+with open('dict4pronounce.csv', 'w') as writeFile:
     writer = csv.writer(writeFile)
     writer.writerows(lines)
     writer.writerows(delete)
     
 
 
-with open("dict2.csv") as csvfile:
+with open("dict4pronounce.csv") as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
-        if data[1] == character:
-            print(data[5])
-            bpmf.append(data[5])
+        if data[0] == character:
+            print(data[1])
+            bpmf.append(data[1])

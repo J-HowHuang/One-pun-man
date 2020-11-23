@@ -1,25 +1,25 @@
 import csv
 def pronounce(keyword):
     bpmf = ""
-    with open("dict2.csv") as csvfile:
+    with open("dict4pronounce.csv") as csvfile:
         dic = csv.reader(csvfile)
         for data in dic:
-            if data[1] == keyword:
-                bpmf = data[5]
+            if data[0] == keyword:
+                bpmf = data[1]
                 break
          
     if bpmf != "":
         return bpmf
     else:  
         for character in keyword:
-            with open("dict2.csv") as csvfile:
+            with open("dict4pronounce.csv") as csvfile:
                 dic = csv.reader(csvfile)
                 for data in dic:
-                    if data[1] == character:
-                        if data[5][0] == "(":
-                            bpmf += ('　' + data[5][3:])
+                    if data[0] == character:
+                        if data[1][0] == "(":
+                            bpmf += ('　' + data[1][3:])
                         else:
-                            bpmf += ('　' + data[5])
+                            bpmf += ('　' + data[1])
                         break
 
     if bpmf[0] == '　':
