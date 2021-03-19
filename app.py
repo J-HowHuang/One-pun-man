@@ -37,6 +37,7 @@ def callback():
 
     return 'OK'
 
+
 @handler.add(MessageEvent, message=TextMessage)
 def respond_pun(event):
     responseMessage = handleMessage(event.message.text)
@@ -45,8 +46,6 @@ def respond_pun(event):
             event.reply_token,
             TextSendMessage(text=responseMessage)
         )
-
-
 
 
 import os

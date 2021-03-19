@@ -8,9 +8,9 @@ bpmf = []
 with open(os.path.join(dict_path, "dict2.csv")) as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
-        if data[1] == character:
-            print(data[5])
-            bpmf.append(data[5])
+        if data[0] == character:
+            print(data[1])
+            bpmf.append(data[1])
 
 
 select = int(input())
@@ -33,7 +33,7 @@ with open(os.path.join(dict_path, 'dict2.csv'), 'r') as readFile:
     reader = csv.reader(readFile)
     for row in reader:
         lines.append(row) 
-        if row[1] == character and row[5] != bpmf[select]:
+        if row[0] == character and row[1] != bpmf[select]:
             # print(row)
             delete.append(row)
             lines.remove(row)
@@ -50,6 +50,6 @@ with open(os.path.join(dict_path, 'dict2.csv'), 'w') as writeFile:
 with open(os.path.join(dict_path, "dict2.csv")) as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
-        if data[1] == character:
-            print(data[5])
-            bpmf.append(data[5])
+        if data[0] == character:
+            print(data[1])
+            bpmf.append(data[1])
