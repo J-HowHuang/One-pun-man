@@ -1,7 +1,7 @@
 import csv
 import os
 
-dict_path = "../Dictionaries"
+dict_path = "../Dictionaries/"
 character = input("請輸入欲更改的破音字：")
 bpmf = []
 
