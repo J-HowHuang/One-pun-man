@@ -1,5 +1,4 @@
 # One-pun-man
-A smart man gives you one pun (Line chatbot)
 
 
 朋友總是厭倦你的諧音梗爛笑話嗎？
