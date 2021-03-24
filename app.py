@@ -8,11 +8,16 @@ from linebot.models import *
 from one_pun import handleMessage
 
 import json
+import os
 
 app = Flask(__name__)
 
-config_file = open('config.json')
-config = json.load(config_file)
+if os.path.isfile('config.json'):
+    config_file = open('config.json')
+    config = json.load(config_file)
+else:
+    config = os.environ
+
 
 access_token = config['channel_access_token']
 secret = config['channel_secret']
