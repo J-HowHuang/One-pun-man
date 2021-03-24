@@ -1,11 +1,11 @@
 import csv
 import os
 
-dict_path = "../Dictionaries"
+dict_path = "../Dictionaries/"
 character = input("請輸入欲更改的破音字：")
 bpmf = []
 
-with open(os.path.join(dict_path, "dict2.csv")) as csvfile:
+with open(os.path.join(dict_path, "dict4pronounce.csv")) as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
         if data[0] == character:
@@ -29,7 +29,7 @@ select = int(input())
 
 lines = []
 delete = []
-with open(os.path.join(dict_path, 'dict2.csv'), 'r') as readFile:
+with open(os.path.join(dict_path, 'dict4pronounce.csv'), 'r') as readFile:
     reader = csv.reader(readFile)
     for row in reader:
         lines.append(row) 
@@ -40,14 +40,14 @@ with open(os.path.join(dict_path, 'dict2.csv'), 'r') as readFile:
 
 
 
-with open(os.path.join(dict_path, 'dict2.csv'), 'w') as writeFile:
+with open(os.path.join(dict_path, 'dict4pronounce.csv'), 'w') as writeFile:
     writer = csv.writer(writeFile)
     writer.writerows(lines)
     writer.writerows(delete)
     
 
 
-with open(os.path.join(dict_path, "dict2.csv")) as csvfile:
+with open(os.path.join(dict_path, "dict4pronounce.csv")) as csvfile:
     dic = csv.reader(csvfile)
     for data in dic:
         if data[0] == character:
