@@ -1,5 +1,4 @@
 from flask import Flask, request, abort
-from timeit import default_timer as timer
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -9,6 +8,7 @@ from one_pun import handleMessage
 
 import json
 import os
+from time import time
 
 app = Flask(__name__)
 
@@ -45,12 +45,16 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def respond_pun(event):
+    pun_start=time()
     responseMessage = handleMessage(event.message.text)
+    pun_end=time()
     if responseMessage != "pun not found":
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=responseMessage)
         )
+    send_end=time()
+    print("pun finding: %.3f s, sending: %.3f s" % (pun_end-pun_start, send_end-pun_end))
 
 
 import os
